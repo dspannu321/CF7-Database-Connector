@@ -2,7 +2,7 @@
 /**
  * Interface for form source adapters (e.g. CF7, WPForms).
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-interface FormBridge_Source_Adapter {
+interface CF7DB_Source_Adapter {
 
     /**
      * Registers hooks to capture form submissions and pass normalized payload to the router.

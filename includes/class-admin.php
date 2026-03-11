@@ -2,7 +2,7 @@
 /**
  * Admin UI: menu, pages, and assets.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -11,24 +11,24 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_Admin {
+class CF7DB_Admin {
 
-    private const MENU_SLUG = 'formbridge';
+    private const MENU_SLUG = 'cf7-database-connector';
     private const CAPABILITY = 'manage_options';
-    private const CONNECTION_NONCE_ACTION = 'formbridge_connection';
+    private const CONNECTION_NONCE_ACTION = 'cf7db_connection';
 
-    private FormBridge_Connection_Repository $connection_repository;
-    private FormBridge_Connection_Manager $connection_manager;
-    private FormBridge_Mapping_Repository $mapping_repository;
-    private FormBridge_Log_Repository $log_repository;
-    private FormBridge_Router $router;
+    private CF7DB_Connection_Repository $connection_repository;
+    private CF7DB_Connection_Manager $connection_manager;
+    private CF7DB_Mapping_Repository $mapping_repository;
+    private CF7DB_Log_Repository $log_repository;
+    private CF7DB_Router $router;
 
     public function __construct(
-        FormBridge_Connection_Repository $connection_repository,
-        FormBridge_Connection_Manager $connection_manager,
-        FormBridge_Mapping_Repository $mapping_repository,
-        FormBridge_Log_Repository $log_repository,
-        FormBridge_Router $router
+        CF7DB_Connection_Repository $connection_repository,
+        CF7DB_Connection_Manager $connection_manager,
+        CF7DB_Mapping_Repository $mapping_repository,
+        CF7DB_Log_Repository $log_repository,
+        CF7DB_Router $router
     ) {
         $this->connection_repository = $connection_repository;
         $this->connection_manager    = $connection_manager;
@@ -45,25 +45,25 @@ class FormBridge_Admin {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
         add_action('admin_init', [$this, 'handle_connection_actions']);
         add_action('admin_init', [$this, 'handle_mapping_actions']);
-        add_action('wp_ajax_formbridge_test_connection_draft', [$this, 'ajax_test_connection_draft']);
+        add_action('wp_ajax_cf7db_test_connection_draft', [$this, 'ajax_test_connection_draft']);
     }
 
     /**
-     * Registers the FormBridge top-level menu and subpages.
+     * Registers the CF7 Database Connector top-level menu and subpages.
      */
     public function register_menu(): void {
         if (!current_user_can(self::CAPABILITY)) {
             return;
         }
 
-        $menu_icon = formbridge_menu_icon_url();
+        $menu_icon = cf7db_menu_icon_url();
         if ($menu_icon === null) {
             $menu_icon = 'dashicons-database-export';
         }
 
         add_menu_page(
-            __('CF7 Database Connector', 'formbridge'),
-            __('CF7 Database Connector', 'formbridge'),
+            __('CF7 Database Connector', 'cf7-database-connector'),
+            __('CF7 Database Connector', 'cf7-database-connector'),
             self::CAPABILITY,
             self::MENU_SLUG,
             [$this, 'render_connections_page'],
@@ -73,8 +73,8 @@ class FormBridge_Admin {
 
         add_submenu_page(
             self::MENU_SLUG,
-            __('Connections', 'formbridge'),
-            __('Connections', 'formbridge'),
+            __('Connections', 'cf7-database-connector'),
+            __('Connections', 'cf7-database-connector'),
             self::CAPABILITY,
             self::MENU_SLUG,
             [$this, 'render_connections_page']
@@ -82,8 +82,8 @@ class FormBridge_Admin {
 
         add_submenu_page(
             self::MENU_SLUG,
-            __('Mappings', 'formbridge'),
-            __('Mappings', 'formbridge'),
+            __('Mappings', 'cf7-database-connector'),
+            __('Mappings', 'cf7-database-connector'),
             self::CAPABILITY,
             self::MENU_SLUG . '-mappings',
             [$this, 'render_mappings_page']
@@ -91,8 +91,8 @@ class FormBridge_Admin {
 
         add_submenu_page(
             self::MENU_SLUG,
-            __('Logs', 'formbridge'),
-            __('Logs', 'formbridge'),
+            __('Logs', 'cf7-database-connector'),
+            __('Logs', 'cf7-database-connector'),
             self::CAPABILITY,
             self::MENU_SLUG . '-logs',
             [$this, 'render_logs_page']
@@ -100,7 +100,7 @@ class FormBridge_Admin {
     }
 
     /**
-     * Enqueues admin assets only on FormBridge admin pages.
+     * Enqueues admin assets only on CF7 Database Connector admin pages.
      *
      * @param string $hook_suffix Current admin page hook suffix.
      */
@@ -109,35 +109,30 @@ class FormBridge_Admin {
             return;
         }
 
-        $formbridge_screens = [
-            'toplevel_page_formbridge',
-            'formbridge_page_formbridge-mappings',
-            'formbridge_page_formbridge-logs',
-        ];
-
-        if (!in_array($hook_suffix, $formbridge_screens, true)) {
+        $screen = get_current_screen();
+        if (!$screen || strpos($screen->id, 'cf7-database-connector') === false) {
             return;
         }
 
         wp_enqueue_style(
-            'formbridge-admin',
-            FORMBRIDGE_PLUGIN_URL . 'admin/assets/admin.css',
-            [],
-            FORMBRIDGE_VERSION
+            'cf7db-admin',
+            CF7DB_PLUGIN_URL . 'admin/assets/admin.css',
+            ['common'],
+            CF7DB_VERSION
         );
 
         wp_enqueue_script(
-            'formbridge-admin',
-            FORMBRIDGE_PLUGIN_URL . 'admin/assets/admin.js',
+            'cf7db-admin',
+            CF7DB_PLUGIN_URL . 'admin/assets/admin.js',
             [],
-            FORMBRIDGE_VERSION,
+            CF7DB_VERSION,
             true
         );
 
-        if ($hook_suffix === 'toplevel_page_formbridge') {
-            wp_localize_script('formbridge-admin', 'formbridgeAdmin', [
+        if ($screen->id === 'toplevel_page_cf7-database-connector') {
+            wp_localize_script('cf7db-admin', 'cf7dbAdmin', [
                 'ajaxUrl'              => admin_url('admin-ajax.php'),
-                'testConnectionNonce' => wp_create_nonce('formbridge_test_connection_draft'),
+                'testConnectionNonce' => wp_create_nonce('cf7db_test_connection_draft'),
             ]);
         }
     }
@@ -150,7 +145,7 @@ class FormBridge_Admin {
             return;
         }
 
-        $action = isset($_REQUEST['formbridge_action']) ? sanitize_text_field(wp_unslash($_REQUEST['formbridge_action'])) : '';
+        $action = isset($_REQUEST['cf7db_action']) ? sanitize_text_field(wp_unslash($_REQUEST['cf7db_action'])) : '';
         if ($action === '') {
             return;
         }
@@ -159,7 +154,7 @@ class FormBridge_Admin {
 
         if ($action === 'delete_connection') {
             $id = isset($_REQUEST['id']) ? absint($_REQUEST['id']) : 0;
-            if ($id && isset($_REQUEST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), 'formbridge_delete_connection_' . $id)) {
+            if ($id && isset($_REQUEST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), 'cf7db_delete_connection_' . $id)) {
                 $this->connection_repository->delete($id);
                 $redirect_url = add_query_arg('deleted', '1', $redirect_url);
             }
@@ -169,7 +164,7 @@ class FormBridge_Admin {
 
         if ($action === 'test_connection') {
             $id = isset($_REQUEST['id']) ? absint($_REQUEST['id']) : 0;
-            if ($id && isset($_REQUEST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), 'formbridge_test_connection_' . $id)) {
+            if ($id && isset($_REQUEST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), 'cf7db_test_connection_' . $id)) {
                 $conn = $this->connection_repository->get_by_id($id);
                 if ($conn) {
                     $result = $this->connection_manager->test_connection($conn);
@@ -201,15 +196,15 @@ class FormBridge_Admin {
 
             $error_message = '';
             if ($name === '') {
-                $error_message = __('Connection name is required.', 'formbridge');
+                $error_message = __('Connection name is required.', 'cf7-database-connector');
             } elseif ($host === '') {
-                $error_message = __('Host is required.', 'formbridge');
+                $error_message = __('Host is required.', 'cf7-database-connector');
             } elseif ($dbname === '') {
-                $error_message = __('Database name is required.', 'formbridge');
+                $error_message = __('Database name is required.', 'cf7-database-connector');
             } elseif ($user === '') {
-                $error_message = __('Username is required.', 'formbridge');
+                $error_message = __('Username is required.', 'cf7-database-connector');
             } elseif ($edit_id === 0 && $pass === '') {
-                $error_message = __('Password is required for new connections.', 'formbridge');
+                $error_message = __('Password is required for new connections.', 'cf7-database-connector');
             }
 
             if ($error_message !== '') {
@@ -260,17 +255,17 @@ class FormBridge_Admin {
             return;
         }
 
-        if (isset($_POST['formbridge_action']) && $_POST['formbridge_action'] === 'test_submission') {
+        if (isset($_POST['cf7db_action']) && $_POST['cf7db_action'] === 'test_submission') {
             $this->handle_test_submission();
             return;
         }
 
-        if (!isset($_POST['formbridge_action']) || $_POST['formbridge_action'] !== 'save_mapping') {
+        if (!isset($_POST['cf7db_action']) || $_POST['cf7db_action'] !== 'save_mapping') {
             return;
         }
 
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'formbridge_save_mapping')) {
-            wp_safe_redirect(admin_url('admin.php?page=formbridge-mappings&error=1'));
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'cf7db_save_mapping')) {
+            wp_safe_redirect(admin_url('admin.php?page=cf7-database-connector-mappings&error=1'));
             exit;
         }
 
@@ -278,26 +273,26 @@ class FormBridge_Admin {
         $connection_id  = isset($_POST['connection_id']) ? absint($_POST['connection_id']) : 0;
         $destination_table = isset($_POST['destination_table']) ? sanitize_text_field(wp_unslash($_POST['destination_table'])) : '';
 
-        $redirect_url = admin_url('admin.php?page=formbridge-mappings');
+        $redirect_url = admin_url('admin.php?page=cf7-database-connector-mappings');
 
         if ($form_id <= 0 || $connection_id <= 0 || $destination_table === '') {
-            wp_safe_redirect(add_query_arg(['error' => '1', 'message' => rawurlencode(__('Form, connection, and table are required.', 'formbridge'))], $redirect_url));
+            wp_safe_redirect(add_query_arg(['error' => '1', 'message' => rawurlencode(__('Form, connection, and table are required.', 'cf7-database-connector'))], $redirect_url));
             exit;
         }
 
         $connection = $this->connection_repository->get_by_id($connection_id);
         if (!$connection) {
-            wp_safe_redirect(add_query_arg(['error' => '1', 'message' => rawurlencode(__('Connection not found.', 'formbridge'))], $redirect_url));
+            wp_safe_redirect(add_query_arg(['error' => '1', 'message' => rawurlencode(__('Connection not found.', 'cf7-database-connector'))], $redirect_url));
             exit;
         }
 
         if (!$this->connection_manager->table_exists($connection, $destination_table)) {
-            wp_safe_redirect(add_query_arg(['error' => '1', 'message' => rawurlencode(__('Destination table not found.', 'formbridge'))], $redirect_url));
+            wp_safe_redirect(add_query_arg(['error' => '1', 'message' => rawurlencode(__('Destination table not found.', 'cf7-database-connector'))], $redirect_url));
             exit;
         }
 
         $valid_columns = $this->connection_manager->get_valid_columns($connection, $destination_table);
-        $cf7_fields    = formbridge_get_cf7_fields($form_id);
+        $cf7_fields    = cf7db_get_cf7_fields($form_id);
         $field_map     = [];
 
         foreach ($cf7_fields as $field_name) {
@@ -315,7 +310,7 @@ class FormBridge_Admin {
         if (empty($field_map)) {
             wp_safe_redirect(add_query_arg([
                 'error'   => '1',
-                'message' => rawurlencode(__('At least one field must be mapped to a database column.', 'formbridge')),
+                'message' => rawurlencode(__('At least one field must be mapped to a database column.', 'cf7-database-connector')),
             ], $redirect_url));
             exit;
         }
@@ -360,14 +355,14 @@ class FormBridge_Admin {
      */
     private function handle_test_submission(): void {
         $mapping_id = isset($_POST['mapping_id']) ? absint($_POST['mapping_id']) : 0;
-        if ($mapping_id <= 0 || !isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'formbridge_test_submission_' . $mapping_id)) {
-            wp_safe_redirect(add_query_arg(['page' => 'formbridge-mappings', 'error' => '1', 'message' => rawurlencode(__('Invalid request.', 'formbridge'))], admin_url('admin.php')));
+        if ($mapping_id <= 0 || !isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'cf7db_test_submission_' . $mapping_id)) {
+            wp_safe_redirect(add_query_arg(['page' => 'cf7-database-connector-mappings', 'error' => '1', 'message' => rawurlencode(__('Invalid request.', 'cf7-database-connector'))], admin_url('admin.php')));
             exit;
         }
 
         $mapping = $this->mapping_repository->get_by_id($mapping_id);
         if (!$mapping) {
-            wp_safe_redirect(add_query_arg(['page' => 'formbridge-mappings', 'error' => '1', 'message' => rawurlencode(__('Mapping not found.', 'formbridge'))], admin_url('admin.php')));
+            wp_safe_redirect(add_query_arg(['page' => 'cf7-database-connector-mappings', 'error' => '1', 'message' => rawurlencode(__('Mapping not found.', 'cf7-database-connector'))], admin_url('admin.php')));
             exit;
         }
 
@@ -377,23 +372,23 @@ class FormBridge_Admin {
             $field_map = [];
         }
 
-        $dummy_fields = formbridge_dummy_payload_for_field_map($field_map);
+        $dummy_fields = cf7db_dummy_payload_for_field_map($field_map);
         $normalized   = [
             'source'        => 'cf7',
             'form_id'       => (int) $mapping['form_id'],
-            'form_title'    => __('Test submission', 'formbridge'),
-            'submitted_at'  => formbridge_now(),
+            'form_title'    => __('Test submission', 'cf7-database-connector'),
+            'submitted_at'  => cf7db_now(),
             'fields'        => $dummy_fields,
             'meta'          => ['test' => true],
         ];
 
         $result = $this->router->route($normalized);
-        $redirect_url = admin_url('admin.php?page=formbridge-mappings&edit_mapping=' . $mapping_id);
+        $redirect_url = admin_url('admin.php?page=cf7-database-connector-mappings&edit_mapping=' . $mapping_id);
 
         if (!empty($result['success'])) {
             wp_safe_redirect(add_query_arg(['test_sent' => '1'], $redirect_url));
         } else {
-            wp_safe_redirect(add_query_arg(['error' => '1', 'message' => rawurlencode($result['message'] ?? __('Test submission failed.', 'formbridge'))], $redirect_url));
+            wp_safe_redirect(add_query_arg(['error' => '1', 'message' => rawurlencode($result['message'] ?? __('Test submission failed.', 'cf7-database-connector'))], $redirect_url));
         }
         exit;
     }
@@ -403,11 +398,11 @@ class FormBridge_Admin {
      */
     public function ajax_test_connection_draft(): void {
         if (!current_user_can(self::CAPABILITY)) {
-            wp_send_json_error(['message' => __('Permission denied.', 'formbridge')]);
+            wp_send_json_error(['message' => __('Permission denied.', 'cf7-database-connector')]);
         }
 
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'formbridge_test_connection_draft')) {
-            wp_send_json_error(['message' => __('Security check failed.', 'formbridge')]);
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'cf7db_test_connection_draft')) {
+            wp_send_json_error(['message' => __('Security check failed.', 'cf7-database-connector')]);
         }
 
         $id     = isset($_POST['id']) ? absint($_POST['id']) : 0;
@@ -418,7 +413,7 @@ class FormBridge_Admin {
         $pass   = isset($_POST['db_pass']) ? wp_unslash($_POST['db_pass']) : '';
 
         if ($host === '' || $dbname === '' || $user === '') {
-            wp_send_json_error(['message' => __('Host, database, and user are required.', 'formbridge')]);
+            wp_send_json_error(['message' => __('Host, database, and user are required.', 'cf7-database-connector')]);
         }
 
         if ($id > 0 && $pass === '') {
@@ -429,7 +424,7 @@ class FormBridge_Admin {
         }
 
         if ($pass === '') {
-            wp_send_json_error(['message' => __('Password is required to test the connection.', 'formbridge')]);
+            wp_send_json_error(['message' => __('Password is required to test the connection.', 'cf7-database-connector')]);
         }
 
         $connection = [
@@ -442,9 +437,9 @@ class FormBridge_Admin {
 
         $test = $this->connection_manager->test_connection($connection);
         if ($test['success']) {
-            wp_send_json_success(['message' => $test['message'] ?? __('Connection successful.', 'formbridge')]);
+            wp_send_json_success(['message' => $test['message'] ?? __('Connection successful.', 'cf7-database-connector')]);
         }
-        wp_send_json_error(['message' => $test['message'] ?? __('Connection failed.', 'formbridge')]);
+        wp_send_json_error(['message' => $test['message'] ?? __('Connection failed.', 'cf7-database-connector')]);
     }
 
     /**
@@ -485,29 +480,29 @@ class FormBridge_Admin {
 
         $notices = [];
         if (isset($_GET['created']) && $_GET['created'] === '1') {
-            $notices[] = ['type' => 'success', 'text' => __('Connection created.', 'formbridge')];
+            $notices[] = ['type' => 'success', 'text' => __('Connection created.', 'cf7-database-connector')];
         }
         if (isset($_GET['updated']) && $_GET['updated'] === '1') {
-            $notices[] = ['type' => 'success', 'text' => __('Connection updated.', 'formbridge')];
+            $notices[] = ['type' => 'success', 'text' => __('Connection updated.', 'cf7-database-connector')];
         }
         if (isset($_GET['deleted']) && $_GET['deleted'] === '1') {
-            $notices[] = ['type' => 'success', 'text' => __('Connection deleted.', 'formbridge')];
+            $notices[] = ['type' => 'success', 'text' => __('Connection deleted.', 'cf7-database-connector')];
         }
         if (isset($_GET['error']) && $_GET['error'] === '1') {
-            $msg = isset($_GET['message']) ? sanitize_text_field(wp_unslash($_GET['message'])) : __('An error occurred.', 'formbridge');
+            $msg = isset($_GET['message']) ? sanitize_text_field(wp_unslash($_GET['message'])) : __('An error occurred.', 'cf7-database-connector');
             $notices[] = ['type' => 'error', 'text' => $msg];
         }
         if (isset($_GET['test_success'])) {
             $msg = isset($_GET['test_message']) ? sanitize_text_field(wp_unslash($_GET['test_message'])) : '';
             $notices[] = [
                 'type' => $_GET['test_success'] === '1' ? 'success' : 'error',
-                'text' => $msg ?: ($_GET['test_success'] === '1' ? __('Connection successful.', 'formbridge') : __('Connection failed.', 'formbridge')),
+                'text' => $msg ?: ($_GET['test_success'] === '1' ? __('Connection successful.', 'cf7-database-connector') : __('Connection failed.', 'cf7-database-connector')),
             ];
         }
 
         $ajax_url  = admin_url('admin-ajax.php');
-        $test_nonce = wp_create_nonce('formbridge_test_connection_draft');
-        include FORMBRIDGE_PLUGIN_DIR . 'admin/views/connections-page.php';
+        $test_nonce = wp_create_nonce('cf7db_test_connection_draft');
+        include CF7DB_PLUGIN_DIR . 'admin/views/connections-page.php';
     }
 
     /**
@@ -518,7 +513,7 @@ class FormBridge_Admin {
 
         $stats       = $this->get_stats();
         $connections = $this->connection_repository->get_all();
-        $cf7_forms   = formbridge_get_cf7_forms();
+        $cf7_forms   = cf7db_get_cf7_forms();
 
         $form_id         = isset($_GET['form_id']) ? absint($_GET['form_id']) : 0;
         $connection_id   = isset($_GET['connection_id']) ? absint($_GET['connection_id']) : 0;
@@ -541,8 +536,10 @@ class FormBridge_Admin {
                 'id'                => (int) $m['id'],
                 'form_id'           => (int) $m['form_id'],
                 'connection_id'    => (int) $m['connection_id'],
-                'form_title'        => $form_titles[ (int) $m['form_id'] ] ?? sprintf(__('Form #%d', 'formbridge'), (int) $m['form_id']),
-                'connection_name'   => $connection_names[ (int) $m['connection_id'] ] ?? sprintf(__('Connection #%d', 'formbridge'), (int) $m['connection_id']),
+                /* translators: %d: form ID number */
+                'form_title'        => $form_titles[ (int) $m['form_id'] ] ?? sprintf(__('Form #%d', 'cf7-database-connector'), (int) $m['form_id']),
+                /* translators: %d: connection ID number */
+                'connection_name'   => $connection_names[ (int) $m['connection_id'] ] ?? sprintf(__('Connection #%d', 'cf7-database-connector'), (int) $m['connection_id']),
                 'destination_table' => (string) $m['destination_table'],
             ];
         }
@@ -574,7 +571,7 @@ class FormBridge_Admin {
         }
 
         if ($form_id > 0) {
-            $cf7_fields = formbridge_get_cf7_fields($form_id);
+            $cf7_fields = cf7db_get_cf7_fields($form_id);
         }
 
         $existing_mapping = null;
@@ -584,18 +581,18 @@ class FormBridge_Admin {
 
         $notices = [];
         if (isset($_GET['saved']) && $_GET['saved'] === '1') {
-            $notices[] = ['type' => 'success', 'text' => __('Mapping saved.', 'formbridge')];
+            $notices[] = ['type' => 'success', 'text' => __('Mapping saved.', 'cf7-database-connector')];
         }
         if (isset($_GET['error']) && $_GET['error'] === '1') {
-            $msg = isset($_GET['message']) ? sanitize_text_field(wp_unslash($_GET['message'])) : __('An error occurred.', 'formbridge');
+            $msg = isset($_GET['message']) ? sanitize_text_field(wp_unslash($_GET['message'])) : __('An error occurred.', 'cf7-database-connector');
             $notices[] = ['type' => 'error', 'text' => $msg];
         }
         if (isset($_GET['test_sent']) && $_GET['test_sent'] === '1') {
-            $notices[] = ['type' => 'success', 'text' => __('Test data was sent successfully. Check the destination table and Logs.', 'formbridge')];
+            $notices[] = ['type' => 'success', 'text' => __('Test data was sent successfully. Check the destination table and Logs.', 'cf7-database-connector')];
         }
 
-        $test_submission_nonce = $edit_mapping_id > 0 ? wp_create_nonce('formbridge_test_submission_' . $edit_mapping_id) : '';
-        include FORMBRIDGE_PLUGIN_DIR . 'admin/views/mappings-page.php';
+        $test_submission_nonce = $edit_mapping_id > 0 ? wp_create_nonce('cf7db_test_submission_' . $edit_mapping_id) : '';
+        include CF7DB_PLUGIN_DIR . 'admin/views/mappings-page.php';
     }
 
     /**
@@ -608,7 +605,7 @@ class FormBridge_Admin {
         $this->check_capability();
         $stats = $this->get_stats();
         $logs  = $this->log_repository->get_recent(50, 0);
-        include FORMBRIDGE_PLUGIN_DIR . 'admin/views/logs-page.php';
+        include CF7DB_PLUGIN_DIR . 'admin/views/logs-page.php';
     }
 
     /**
@@ -616,7 +613,7 @@ class FormBridge_Admin {
      */
     private function check_capability(): void {
         if (!current_user_can(self::CAPABILITY)) {
-            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'formbridge'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'cf7-database-connector'));
         }
     }
 
@@ -626,7 +623,7 @@ class FormBridge_Admin {
      * @param string $view_name View filename without path (e.g. 'connections-page').
      */
     private function load_view(string $view_name): void {
-        $path = FORMBRIDGE_PLUGIN_DIR . 'admin/views/' . $view_name . '.php';
+        $path = CF7DB_PLUGIN_DIR . 'admin/views/' . $view_name . '.php';
         if (is_readable($path)) {
             include $path;
         }

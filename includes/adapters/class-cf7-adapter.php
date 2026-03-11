@@ -2,7 +2,7 @@
 /**
  * Captures Contact Form 7 submissions, normalizes them, and sends to the router.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_CF7_Adapter implements FormBridge_Source_Adapter {
+class CF7DB_CF7_Adapter implements CF7DB_Source_Adapter {
 
     private const INTERNAL_KEYS = [
         '_wpcf7',
@@ -22,9 +22,9 @@ class FormBridge_CF7_Adapter implements FormBridge_Source_Adapter {
         '_wpnonce',
     ];
 
-    private FormBridge_Router $router;
+    private CF7DB_Router $router;
 
-    public function __construct(FormBridge_Router $router) {
+    public function __construct(CF7DB_Router $router) {
         $this->router = $router;
     }
 
@@ -74,7 +74,7 @@ class FormBridge_CF7_Adapter implements FormBridge_Source_Adapter {
             'source'       => $this->get_source_key(),
             'form_id'      => (int) $contact_form->id(),
             'form_title'   => $contact_form->title() ?: '',
-            'submitted_at' => formbridge_now(),
+            'submitted_at' => cf7db_now(),
             'fields'       => $fields,
             'meta'         => [
                 'ip'         => isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '',

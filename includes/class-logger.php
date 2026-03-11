@@ -2,7 +2,7 @@
 /**
  * Standardizes and persists sync attempt logs. Never logs credentials.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -11,11 +11,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_Logger {
+class CF7DB_Logger {
 
-    private FormBridge_Log_Repository $log_repository;
+    private CF7DB_Log_Repository $log_repository;
 
-    public function __construct(FormBridge_Log_Repository $log_repository) {
+    public function __construct(CF7DB_Log_Repository $log_repository) {
         $this->log_repository = $log_repository;
     }
 
@@ -28,7 +28,7 @@ class FormBridge_Logger {
     public function log(array $data): int|false {
         $payload = $data['payload'] ?? null;
         if (is_array($payload)) {
-            $payload = formbridge_json_encode($payload);
+            $payload = cf7db_json_encode($payload);
         }
 
         return $this->log_repository->insert([

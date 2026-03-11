@@ -2,7 +2,9 @@
 /**
  * Read/write for form sync attempt logs.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
+ *
+ * phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin tables; $wpdb is the correct API for custom table CRUD.
  */
 
 declare(strict_types=1);
@@ -11,13 +13,13 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_Log_Repository {
+class CF7DB_Log_Repository {
 
     private string $table;
 
     public function __construct() {
         global $wpdb;
-        $this->table = $wpdb->prefix . 'formbridge_logs';
+        $this->table = $wpdb->prefix . 'cf7db_logs';
     }
 
     /**
@@ -34,7 +36,7 @@ class FormBridge_Log_Repository {
             : null;
         $payload = $data['payload'] ?? null;
         $message = $data['message'] ?? null;
-        $now = formbridge_now();
+        $now = cf7db_now();
 
         $result = $wpdb->query($wpdb->prepare(
             "INSERT INTO {$this->table} (source_type, form_id, mapping_id, destination_type, destination_table, payload, status, message, created_at) VALUES (%s, %d, %s, %s, %s, %s, %s, %s, %s)",

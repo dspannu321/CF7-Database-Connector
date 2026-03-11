@@ -2,7 +2,7 @@
 /**
  * Transforms normalized submission fields into destination payload using field map.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_Mapping_Engine {
+class CF7DB_Mapping_Engine {
 
     /**
      * Maps normalized submission fields to destination columns. Skips missing or unmapped fields.

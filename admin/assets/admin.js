@@ -1,17 +1,17 @@
 /**
- * FormBridge admin scripts.
+ * CF7 Database Connector admin scripts.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 (function () {
     'use strict';
 
     // Toggle payload row visibility on Logs page.
-    document.querySelectorAll('.formbridge-toggle-payload').forEach(function (btn) {
+    document.querySelectorAll('.cf7db-toggle-payload').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var logId = this.getAttribute('data-log-id');
-            var row = document.getElementById('formbridge-payload-' + logId);
+            var row = document.getElementById('cf7db-payload-' + logId);
             if (!row) return;
             row.hidden = !row.hidden;
             var isExpanded = !row.hidden;
@@ -21,17 +21,17 @@
     });
 
     // Test connection from form (Connections page) — uses current form values, no save.
-    if (typeof window.formbridgeAdmin !== 'undefined') {
-        var testBtn = document.getElementById('formbridge-test-connection-btn');
-        var form = document.getElementById('formbridge-connection-form');
-        var resultEl = document.getElementById('formbridge-test-result');
+    if (typeof window.cf7dbAdmin !== 'undefined') {
+        var testBtn = document.getElementById('cf7db-test-connection-btn');
+        var form = document.getElementById('cf7db-connection-form');
+        var resultEl = document.getElementById('cf7db-test-result');
         if (testBtn && form && resultEl) {
             testBtn.addEventListener('click', function () {
-                var idInput = document.getElementById('formbridge-connection-id');
+                var idInput = document.getElementById('cf7db-connection-id');
                 var id = idInput ? parseInt(idInput.value, 10) || 0 : 0;
                 var formData = new FormData();
-                formData.append('action', 'formbridge_test_connection_draft');
-                formData.append('_wpnonce', window.formbridgeAdmin.testConnectionNonce);
+                formData.append('action', 'cf7db_test_connection_draft');
+                formData.append('_wpnonce', window.cf7dbAdmin.testConnectionNonce);
                 formData.append('id', String(id));
                 formData.append('db_host', form.querySelector('[name="db_host"]').value.trim());
                 formData.append('db_port', form.querySelector('[name="db_port"]').value.trim() || '3306');
@@ -40,13 +40,13 @@
                 formData.append('db_pass', form.querySelector('[name="db_pass"]').value);
 
                 resultEl.hidden = true;
-                resultEl.className = 'formbridge-test-result';
+                resultEl.className = 'cf7db-test-result';
                 resultEl.textContent = '';
                 testBtn.disabled = true;
                 testBtn.textContent = 'Testing…';
 
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', window.formbridgeAdmin.ajaxUrl);
+                xhr.open('POST', window.cf7dbAdmin.ajaxUrl);
                 xhr.onload = function () {
                     testBtn.disabled = false;
                     testBtn.textContent = 'Test connection';
@@ -55,16 +55,16 @@
                         data = JSON.parse(xhr.responseText);
                     } catch (e) {
                         resultEl.hidden = false;
-                        resultEl.classList.add('formbridge-test-result-error');
+                        resultEl.classList.add('cf7db-test-result-error');
                         resultEl.textContent = 'Invalid response from server.';
                         return;
                     }
                     resultEl.hidden = false;
                     if (data.success && data.data && data.data.message) {
-                        resultEl.classList.add('formbridge-test-result-success');
+                        resultEl.classList.add('cf7db-test-result-success');
                         resultEl.textContent = data.data.message;
                     } else {
-                        resultEl.classList.add('formbridge-test-result-error');
+                        resultEl.classList.add('cf7db-test-result-error');
                         resultEl.textContent = (data.data && data.data.message) ? data.data.message : 'Connection failed.';
                     }
                 };
@@ -72,7 +72,7 @@
                     testBtn.disabled = false;
                     testBtn.textContent = 'Test connection';
                     resultEl.hidden = false;
-                    resultEl.classList.add('formbridge-test-result-error');
+                    resultEl.classList.add('cf7db-test-result-error');
                     resultEl.textContent = 'Network error. Please try again.';
                 };
                 xhr.send(formData);

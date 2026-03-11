@@ -1,45 +1,76 @@
 /**
- * FormBridge admin styles — production-grade UI.
+ * CF7 Database Connector admin styles — production-grade UI.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 /* ==========================================================================
    Page layout and cards
    ========================================================================== */
 
-.formbridge-wrap {
+.cf7db-wrap {
     max-width: 1200px;
     margin-top: 12px;
 }
 
-.formbridge-page-header {
-    margin-bottom: 24px;
-    padding-bottom: 8px;
+.cf7db-page-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #dcdcde;
 }
 
-.formbridge-page-title {
+.cf7db-page-title {
     margin: 0 0 4px 0;
     font-size: 23px;
     font-weight: 400;
     line-height: 1.3;
 }
 
-.formbridge-page-description {
+.cf7db-page-description {
     margin: 0;
     color: #646970;
     font-size: 14px;
     line-height: 1.5;
 }
 
-.formbridge-admin-logo {
-    display: block;
-    max-height: 40px;
-    width: auto;
-    margin-top: 12px;
+/* Top sub-navigation (Connections / Mappings / Logs) */
+.cf7db-subnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 12px 0 0 0;
+    padding: 0;
+    list-style: none;
 }
 
-.formbridge-card {
+.cf7db-subnav-item {
+    margin: 0;
+}
+
+.cf7db-subnav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    text-decoration: none;
+    color: #2271b1;
+    border: 1px solid transparent;
+}
+
+.cf7db-subnav-link:hover {
+    background: #f0f6fc;
+    border-color: #c3d9f3;
+    color: #135e96;
+}
+
+.cf7db-subnav-item.is-active .cf7db-subnav-link {
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+}
+
+.cf7db-card {
     background: #fff;
     border: 1px solid #c3c4c7;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
@@ -48,7 +79,7 @@
     overflow: hidden;
 }
 
-.formbridge-card-header {
+.cf7db-card-header {
     padding: 16px 20px;
     border-bottom: 1px solid #dcdcde;
     background: #f6f7f7;
@@ -62,67 +93,157 @@
     gap: 8px;
 }
 
-.formbridge-card-body {
+.cf7db-card-body {
     padding: 20px;
 }
 
-.formbridge-card-body .form-table {
+.cf7db-card-body .form-table {
     margin-top: 0;
 }
 
-.formbridge-card-body .form-table th {
-    padding: 12px 10px 12px 0;
+.cf7db-card-body .form-table th {
+    padding: 10px 16px 10px 0;
     width: 180px;
+    vertical-align: top;
+    padding-top: 12px;
 }
 
-.formbridge-card-body .form-table td {
-    padding: 12px 10px;
+.cf7db-card-body .form-table td {
+    padding: 10px 0 10px 0;
+}
+
+/* Uniform input widths across all forms */
+.cf7db-wrap .form-table input[type="text"],
+.cf7db-wrap .form-table input[type="password"],
+.cf7db-wrap .form-table input[type="number"],
+.cf7db-wrap .form-table select,
+.cf7db-input {
+    width: 320px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.cf7db-wrap .form-table input[type="number"].cf7db-input-port,
+.cf7db-input-port {
+    width: 100px;
+}
+
+.cf7db-field-help {
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
+/* Connection form: form + sidebar layout */
+.cf7db-form-with-sidebar {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+}
+
+.cf7db-form-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.cf7db-form-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+.cf7db-tips-panel {
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 16px 18px;
+    position: sticky;
+    top: 32px;
+}
+
+.cf7db-tips-title {
+    margin: 0 0 10px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.cf7db-tips-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #50575e;
+}
+
+.cf7db-tips-list li {
+    margin-bottom: 8px;
+}
+
+.cf7db-tips-list li:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 960px) {
+    .cf7db-form-with-sidebar {
+        flex-direction: column;
+    }
+    .cf7db-form-sidebar {
+        width: 100%;
+    }
+    .cf7db-tips-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 782px) {
+    .cf7db-stat-cards {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ==========================================================================
    Stat cards
    ========================================================================== */
 
-.formbridge-stat-cards {
-    display: flex;
-    flex-wrap: wrap;
+.cf7db-stat-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-bottom: 24px;
+    width: 100%;
 }
 
-.formbridge-stat-card {
+.cf7db-stat-card {
     display: flex;
     align-items: center;
     gap: 14px;
-    min-width: 160px;
-    padding: 16px 20px;
+    padding: 18px 20px;
     background: #fff;
     border: 1px solid #c3c4c7;
     border-radius: 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 }
 
-.formbridge-stat-icon {
+.cf7db-stat-icon {
     font-size: 28px;
     width: 28px;
     height: 28px;
     color: #2271b1;
 }
 
-.formbridge-stat-content {
+.cf7db-stat-content {
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 
-.formbridge-stat-value {
+.cf7db-stat-value {
     font-size: 22px;
     font-weight: 600;
     line-height: 1.2;
     color: #1d2327;
 }
 
-.formbridge-stat-label {
+.cf7db-stat-label {
     font-size: 12px;
     color: #646970;
 }
@@ -131,23 +252,23 @@
    Notices
    ========================================================================== */
 
-.formbridge-wrap .notice {
+.cf7db-wrap .notice {
     margin: 0 0 20px 0;
 }
 
-.formbridge-wrap .notice p {
+.cf7db-wrap .notice p {
     margin: 0.5em 0;
 }
 
-.formbridge-wrap .notice p:first-child {
+.cf7db-wrap .notice p:first-child {
     margin-top: 0;
 }
 
-.formbridge-wrap .notice p:last-child {
+.cf7db-wrap .notice p:last-child {
     margin-bottom: 0;
 }
 
-.formbridge-notice {
+.cf7db-notice {
     margin: 0 0 16px 0;
     padding: 12px 16px;
     border-left: 4px solid #72aee6;
@@ -155,42 +276,42 @@
     border-radius: 0 4px 4px 0;
 }
 
-.formbridge-notice p {
+.cf7db-notice p {
     margin: 0;
     font-size: 14px;
 }
 
-.formbridge-notice-success {
+.cf7db-notice-success {
     border-left-color: #00a32a;
     background: #edfaef;
 }
 
-.formbridge-notice-error {
+.cf7db-notice-error {
     border-left-color: #d63638;
     background: #fcf0f1;
 }
 
 /* Test connection result (inline, below notices) */
-.formbridge-test-result {
+.cf7db-test-result {
     margin: 0 0 16px 0;
     padding: 12px 16px;
     border-radius: 4px;
     font-size: 14px;
 }
 
-.formbridge-test-result-success {
+.cf7db-test-result-success {
     border-left: 4px solid #00a32a;
     background: #edfaef;
     color: #1e4620;
 }
 
-.formbridge-test-result-error {
+.cf7db-test-result-error {
     border-left: 4px solid #d63638;
     background: #fcf0f1;
     color: #3c434a;
 }
 
-.formbridge-inline-form {
+.cf7db-inline-form {
     display: inline;
 }
 
@@ -198,40 +319,41 @@
    Tables
    ========================================================================== */
 
-.formbridge-table-card .formbridge-card-body {
+.cf7db-table-card .cf7db-card-body.cf7db-table-body,
+.cf7db-table-card .cf7db-table-body {
     padding: 0;
 }
 
-.formbridge-table-card .wp-list-table {
+.cf7db-table-card .wp-list-table {
     margin: 0;
     border: 0;
 }
 
-.formbridge-table-card .wp-list-table thead th {
+.cf7db-table-card .wp-list-table thead th {
     padding: 12px 16px;
     font-weight: 600;
     font-size: 13px;
 }
 
-.formbridge-table-card .wp-list-table tbody td {
+.cf7db-table-card .wp-list-table tbody td {
     padding: 14px 16px;
     vertical-align: middle;
 }
 
-.formbridge-table-card .wp-list-table tbody tr:hover {
+.cf7db-table-card .wp-list-table tbody tr:hover {
     background: #f6f7f7;
 }
 
-.formbridge-actions-cell {
+.cf7db-actions-cell {
     white-space: nowrap;
 }
 
-.formbridge-actions-cell .button {
+.cf7db-actions-cell .button {
     margin-right: 6px;
     margin-bottom: 4px;
 }
 
-.formbridge-actions-cell .button:last-child {
+.cf7db-actions-cell .button:last-child {
     margin-right: 0;
 }
 
@@ -239,7 +361,7 @@
    Empty states
    ========================================================================== */
 
-.formbridge-empty-state {
+.cf7db-empty-state {
     margin: 0;
     padding: 48px 32px;
     text-align: center;
@@ -248,7 +370,7 @@
     border-radius: 4px;
 }
 
-.formbridge-empty-state .dashicons {
+.cf7db-empty-state .dashicons {
     font-size: 48px;
     width: 48px;
     height: 48px;
@@ -259,14 +381,14 @@
     margin-right: auto;
 }
 
-.formbridge-empty-state .formbridge-empty-message {
+.cf7db-empty-state .cf7db-empty-message {
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 8px 0;
     color: #1d2327;
 }
 
-.formbridge-empty-state .description {
+.cf7db-empty-state .description {
     margin: 0;
     max-width: 420px;
     margin-left: auto;
@@ -276,42 +398,46 @@
     line-height: 1.5;
 }
 
+.cf7db-table-body .cf7db-empty-state {
+    margin: 24px;
+}
+
 /* ==========================================================================
    Logs page
    ========================================================================== */
 
-.formbridge-logs-table .column-date {
+.cf7db-logs-table .column-date {
     width: 150px;
 }
 
-.formbridge-logs-table .column-source {
+.cf7db-logs-table .column-source {
     width: 72px;
 }
 
-.formbridge-logs-table .column-form-id {
+.cf7db-logs-table .column-form-id {
     width: 72px;
 }
 
-.formbridge-logs-table .column-destination {
+.cf7db-logs-table .column-destination {
     width: 140px;
 }
 
-.formbridge-logs-table .column-status {
+.cf7db-logs-table .column-status {
     width: 100px;
 }
 
-.formbridge-logs-table .column-payload-toggle {
+.cf7db-logs-table .column-payload-toggle {
     width: 120px;
 }
 
-.formbridge-log-payload .formbridge-payload-cell {
+.cf7db-log-payload .cf7db-payload-cell {
     padding: 16px 20px;
     background: #f6f7f7;
     vertical-align: top;
     border-top: 1px solid #dcdcde;
 }
 
-.formbridge-payload-pre {
+.cf7db-payload-pre {
     margin: 0;
     padding: 14px;
     background: #fff;
@@ -327,7 +453,7 @@
 }
 
 /* Status pills (badges) */
-.formbridge-status {
+.cf7db-status {
     display: inline-block;
     padding: 4px 10px;
     border-radius: 12px;
@@ -336,17 +462,17 @@
     text-transform: capitalize;
 }
 
-.formbridge-status-success {
+.cf7db-status-success {
     background: #d4edda;
     color: #155724;
 }
 
-.formbridge-status-failed {
+.cf7db-status-failed {
     background: #f8d7da;
     color: #721c24;
 }
 
-.formbridge-status-skipped {
+.cf7db-status-skipped {
     background: #e2e3e5;
     color: #383d41;
 }
@@ -355,68 +481,70 @@
    Forms and buttons
    ========================================================================== */
 
-.formbridge-submit-row {
+.cf7db-submit-row {
     margin-top: 20px;
     padding-top: 16px;
     border-top: 1px solid #dcdcde;
 }
 
-.formbridge-submit-row .button-primary {
+.cf7db-submit-row .button-primary {
     margin-right: 8px;
 }
 
-.formbridge-select-row {
+.cf7db-select-row {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
 }
 
-.formbridge-select-row select {
-    min-width: 220px;
+.cf7db-select-row select {
+    width: 320px;
+    max-width: 100%;
 }
 
 /* Mappings: field map table */
-.formbridge-field-map-card .wp-list-table {
+.cf7db-field-map-card .wp-list-table {
     margin: 0;
 }
 
-.formbridge-field-map-card .wp-list-table thead th {
+.cf7db-field-map-card .wp-list-table thead th {
     padding: 12px 16px;
 }
 
-.formbridge-field-map-card .wp-list-table tbody td {
+.cf7db-field-map-card .wp-list-table tbody td {
     padding: 12px 16px;
 }
 
-.formbridge-field-map-card .wp-list-table tbody td code {
+.cf7db-field-map-card .wp-list-table tbody td code {
     font-size: 13px;
     padding: 4px 8px;
     background: #f0f0f1;
     border-radius: 3px;
 }
 
-.formbridge-field-map-card .wp-list-table tbody select {
-    min-width: 200px;
+.cf7db-field-map-card .wp-list-table tbody select {
+    width: 280px;
+    max-width: 100%;
 }
 
 /* In-card notices */
-.formbridge-card .notice {
+.cf7db-card .notice {
     margin: 0 0 16px 0;
 }
 
-.formbridge-card .notice:last-child {
+.cf7db-card .notice:last-child {
     margin-bottom: 0;
 }
 
 /* Step indicator for mappings */
-.formbridge-step-label {
+.cf7db-step-label {
     font-size: 12px;
     color: #646970;
     font-weight: 400;
     margin-left: 8px;
 }
 
-.formbridge-card-header .formbridge-step-label {
+.cf7db-card-header .cf7db-step-label {
     margin-left: 0;
 }

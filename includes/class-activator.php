@@ -4,7 +4,7 @@
  *
  * Creates plugin tables and sets version option.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -13,14 +13,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_Activator {
+class CF7DB_Activator {
 
     /**
      * Runs on plugin activation.
      */
     public static function activate(): void {
         self::create_tables();
-        update_option('formbridge_version', FORMBRIDGE_VERSION);
+        update_option('cf7db_version', CF7DB_VERSION);
     }
 
     /**
@@ -30,9 +30,9 @@ class FormBridge_Activator {
         global $wpdb;
 
         $charset_collate = $wpdb->get_charset_collate();
-        $connections_table = $wpdb->prefix . 'formbridge_connections';
-        $mappings_table    = $wpdb->prefix . 'formbridge_mappings';
-        $logs_table       = $wpdb->prefix . 'formbridge_logs';
+        $connections_table = $wpdb->prefix . 'cf7db_connections';
+        $mappings_table    = $wpdb->prefix . 'cf7db_mappings';
+        $logs_table       = $wpdb->prefix . 'cf7db_logs';
 
         $sql_connections = "CREATE TABLE {$connections_table} (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

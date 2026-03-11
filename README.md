@@ -19,7 +19,7 @@
 
 ## Installation
 
-1. Upload the `formbridge` folder to `wp-content/plugins/`.
+1. Upload the plugin folder (e.g. `CF7-Database-Connector`) to `wp-content/plugins/`.
 2. Activate **CF7 Database Connector** in **Plugins**.
 3. Go to **CF7 Database Connector** in the admin menu.
 
@@ -51,17 +51,16 @@
 
 ## Logo and icon (optional)
 
-To use your own branding in the WordPress admin:
+Place files in `admin/assets/images/`:
 
-- **Folder:** `formbridge/admin/assets/images/`
-- **Menu icon:** Add `icon.png` or `icon.svg` (recommended 20×24 px). Replaces the default icon in the admin sidebar.
-- **Page logo:** Add `logo.png` or `logo.svg` (e.g. 200×50 px). Shown on Connections, Mappings, and Logs page headers.
+- **Menu icon:** `icon.png` or `icon.svg` (recommended 20×24 px) replaces the default sidebar icon.
+- **Logo:** `logo.png` or `logo.svg` can be placed here for future use.
 
 See `admin/assets/images/README.md` in the plugin for details.
 
 ## Uninstall
 
-Deactivating or deleting the plugin does not remove saved connections, mappings, or logs. Data is preserved. To remove data, delete the plugin tables and options manually or implement cleanup in `uninstall.php` if desired.
+On uninstall, the plugin removes its options and database tables (`cf7db_connections`, `cf7db_mappings`, `cf7db_logs`). Deactivating (without uninstalling) preserves data.
 
 ## License
 

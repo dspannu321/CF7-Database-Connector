@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to FormBridge are documented here.
+All notable changes to CF7 Database Connector are documented here.
 
 ## [1.0.0] – Initial release (MVP)
 

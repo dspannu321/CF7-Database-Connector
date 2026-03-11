@@ -1,13 +1,18 @@
 <?php
 /**
- * Fired when the plugin is uninstalled.
+ * Fired when the plugin is deleted (not on deactivate).
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-// Optional: delete options and tables on uninstall.
-// For MVP Batch 1, no cleanup is performed so user data is preserved.
+global $wpdb;
+delete_option('cf7db_version');
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.NoCaching -- Required to remove plugin tables on uninstall.
+$wpdb->query('DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7db_connections');
+$wpdb->query('DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7db_mappings');
+$wpdb->query('DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7db_logs');
+// phpcs:enable

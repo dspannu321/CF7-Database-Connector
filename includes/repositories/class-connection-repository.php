@@ -2,7 +2,9 @@
 /**
  * CRUD for saved external database connections.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
+ *
+ * phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin tables; $wpdb is the correct API for custom table CRUD.
  */
 
 declare(strict_types=1);
@@ -11,13 +13,13 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_Connection_Repository {
+class CF7DB_Connection_Repository {
 
     private string $table;
 
     public function __construct() {
         global $wpdb;
-        $this->table = $wpdb->prefix . 'formbridge_connections';
+        $this->table = $wpdb->prefix . 'cf7db_connections';
     }
 
     /**
@@ -29,7 +31,7 @@ class FormBridge_Connection_Repository {
     public function insert(array $data): int|false {
         global $wpdb;
 
-        $now = formbridge_now();
+        $now = cf7db_now();
         $result = $wpdb->query($wpdb->prepare(
             "INSERT INTO {$this->table} (name, db_host, db_port, db_name, db_user, db_pass, created_at, updated_at) VALUES (%s, %s, %d, %s, %s, %s, %s, %s)",
             $data['name'],
@@ -96,7 +98,7 @@ class FormBridge_Connection_Repository {
         $dbname = isset($data['db_name']) ? $data['db_name'] : $existing['db_name'];
         $user   = isset($data['db_user']) ? $data['db_user'] : $existing['db_user'];
         $pass   = isset($data['db_pass']) && $data['db_pass'] !== '' ? $data['db_pass'] : $existing['db_pass'];
-        $now    = formbridge_now();
+        $now    = cf7db_now();
 
         $updated = $wpdb->update(
             $this->table,

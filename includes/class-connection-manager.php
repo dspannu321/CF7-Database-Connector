@@ -2,8 +2,10 @@
 /**
  * Builds PDO connections to external MySQL and discovers tables/columns.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
+
+// phpcs:disable WordPress.DB.RestrictedClasses.mysql__PDO -- PDO required for external MySQL; $wpdb is for local WP DB only.
 
 declare(strict_types=1);
 
@@ -11,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_Connection_Manager {
+class CF7DB_Connection_Manager {
 
     /**
      * Builds a PDO instance from a connection array (keys: db_host, db_port, db_name, db_user, db_pass).
@@ -51,7 +53,7 @@ class FormBridge_Connection_Manager {
     public function test_connection(array $connection): array {
         try {
             $this->connect($connection);
-            return ['success' => true, 'message' => __('Connection successful.', 'formbridge')];
+            return ['success' => true, 'message' => __('Connection successful.', 'cf7-database-connector')];
         } catch (PDOException $e) {
             return [
                 'success' => false,
@@ -140,6 +142,6 @@ class FormBridge_Connection_Manager {
             $msg = substr($msg, 0, 197) . '...';
         }
 
-        return $msg ?: __('Connection failed.', 'formbridge');
+        return $msg ?: __('Connection failed.', 'cf7-database-connector');
     }
 }

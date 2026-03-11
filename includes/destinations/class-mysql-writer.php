@@ -2,7 +2,7 @@
 /**
  * Writes mapped payload to external MySQL via PDO. Validates table/columns against schema.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -11,11 +11,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_MySQL_Writer implements FormBridge_Destination_Writer {
+class CF7DB_MySQL_Writer implements CF7DB_Destination_Writer {
 
-    private FormBridge_Connection_Manager $connection_manager;
+    private CF7DB_Connection_Manager $connection_manager;
 
-    public function __construct(FormBridge_Connection_Manager $connection_manager) {
+    public function __construct(CF7DB_Connection_Manager $connection_manager) {
         $this->connection_manager = $connection_manager;
     }
 
@@ -40,7 +40,7 @@ class FormBridge_MySQL_Writer implements FormBridge_Destination_Writer {
         if (!is_array($connection) || $table === '') {
             return [
                 'success'   => false,
-                'message'   => __('Invalid destination config.', 'formbridge'),
+                'message'   => __('Invalid destination config.', 'cf7-database-connector'),
                 'insert_id' => null,
             ];
         }
@@ -48,7 +48,7 @@ class FormBridge_MySQL_Writer implements FormBridge_Destination_Writer {
         if (empty($payload)) {
             return [
                 'success'   => false,
-                'message'   => __('Payload is empty.', 'formbridge'),
+                'message'   => __('Payload is empty.', 'cf7-database-connector'),
                 'insert_id' => null,
             ];
         }
@@ -56,7 +56,7 @@ class FormBridge_MySQL_Writer implements FormBridge_Destination_Writer {
         if (!$this->connection_manager->table_exists($connection, $table)) {
             return [
                 'success'   => false,
-                'message'   => __('Destination table does not exist.', 'formbridge'),
+                'message'   => __('Destination table does not exist.', 'cf7-database-connector'),
                 'insert_id' => null,
             ];
         }
@@ -68,7 +68,7 @@ class FormBridge_MySQL_Writer implements FormBridge_Destination_Writer {
                     'success'   => false,
                     'message'   => sprintf(
                         /* translators: %s: column name */
-                        __('Column %s does not exist in destination table.', 'formbridge'),
+                        __('Column %s does not exist in destination table.', 'cf7-database-connector'),
                         $column
                     ),
                     'insert_id' => null,
@@ -99,7 +99,7 @@ class FormBridge_MySQL_Writer implements FormBridge_Destination_Writer {
             if ($stmt === false) {
                 return [
                     'success'   => false,
-                    'message'   => __('Failed to prepare statement.', 'formbridge'),
+                    'message'   => __('Failed to prepare statement.', 'cf7-database-connector'),
                     'insert_id' => null,
                 ];
             }
@@ -107,7 +107,7 @@ class FormBridge_MySQL_Writer implements FormBridge_Destination_Writer {
             $insert_id = (int) $pdo->lastInsertId();
             return [
                 'success'   => true,
-                'message'   => __('Insert successful.', 'formbridge'),
+                'message'   => __('Insert successful.', 'cf7-database-connector'),
                 'insert_id' => $insert_id > 0 ? $insert_id : null,
             ];
         } catch (PDOException $e) {

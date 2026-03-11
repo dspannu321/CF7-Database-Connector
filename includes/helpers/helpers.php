@@ -1,8 +1,8 @@
 <?php
 /**
- * Helper functions for FormBridge.
+ * Helper functions for CF7 Database Connector.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
  *
  * @return string
  */
-function formbridge_now(): string {
+function cf7db_now(): string {
     return current_time('mysql');
 }
 
@@ -26,7 +26,7 @@ function formbridge_now(): string {
  * @param array<string, mixed> $data
  * @return string
  */
-function formbridge_json_encode(array $data): string {
+function cf7db_json_encode(array $data): string {
     $json = wp_json_encode($data, JSON_UNESCAPED_UNICODE);
     return $json !== false ? $json : '{}';
 }
@@ -36,7 +36,7 @@ function formbridge_json_encode(array $data): string {
  *
  * @return array<int, array{id: int, title: string}>
  */
-function formbridge_get_cf7_forms(): array {
+function cf7db_get_cf7_forms(): array {
     if (!class_exists('WPCF7_ContactForm')) {
         return [];
     }
@@ -47,7 +47,7 @@ function formbridge_get_cf7_forms(): array {
     foreach ($forms as $form) {
         $list[] = [
             'id'    => (int) $form->id(),
-            'title' => $form->title() ?: sprintf(/* translators: form id */ __('Form #%d', 'formbridge'), $form->id()),
+            'title' => $form->title() ?: sprintf(/* translators: form id */ __('Form #%d', 'cf7-database-connector'), $form->id()),
         ];
     }
 
@@ -60,7 +60,7 @@ function formbridge_get_cf7_forms(): array {
  * @param int $form_id CF7 form (post) ID.
  * @return array<int, string>
  */
-function formbridge_get_cf7_fields(int $form_id): array {
+function cf7db_get_cf7_fields(int $form_id): array {
     if (!class_exists('WPCF7_ContactForm')) {
         return [];
     }
@@ -105,7 +105,7 @@ function formbridge_get_cf7_fields(int $form_id): array {
  * @param array<string, string> $field_map CF7 field name => DB column name.
  * @return array<string, string>
  */
-function formbridge_dummy_payload_for_field_map(array $field_map): array {
+function cf7db_dummy_payload_for_field_map(array $field_map): array {
     $payload = [];
     $column_hints = [
         'email'       => 'test@example.com',
@@ -122,8 +122,8 @@ function formbridge_dummy_payload_for_field_map(array $field_map): array {
         'subject'     => 'Test submission',
         'company'     => 'Test Company',
         'date'        => gmdate('Y-m-d'),
-        'created_at'  => formbridge_now(),
-        'updated_at'  => formbridge_now(),
+        'created_at'  => cf7db_now(),
+        'updated_at'  => cf7db_now(),
     ];
 
     foreach ($field_map as $cf7_field => $db_column) {
@@ -142,17 +142,17 @@ function formbridge_dummy_payload_for_field_map(array $field_map): array {
  * Outputs the admin logo img if admin/assets/images/logo.png or logo.svg exists.
  * Call from admin page headers. Does nothing if no logo file is present.
  */
-function formbridge_admin_logo(): void {
-    $dir = defined('FORMBRIDGE_PLUGIN_DIR') ? FORMBRIDGE_PLUGIN_DIR : '';
-    $url = defined('FORMBRIDGE_PLUGIN_URL') ? FORMBRIDGE_PLUGIN_URL : '';
+function cf7db_admin_logo(): void {
+    $dir = defined('CF7DB_PLUGIN_DIR') ? CF7DB_PLUGIN_DIR : '';
+    $url = defined('CF7DB_PLUGIN_URL') ? CF7DB_PLUGIN_URL : '';
     if ($dir === '' || $url === '') {
         return;
     }
     $base = $dir . 'admin/assets/images/';
     if (is_readable($base . 'logo.png')) {
-        echo '<img src="' . esc_url($url . 'admin/assets/images/logo.png') . '" alt="" class="formbridge-admin-logo" />';
+        echo '<img src="' . esc_url($url . 'admin/assets/images/logo.png') . '" alt="" class="cf7db-admin-logo" />';
     } elseif (is_readable($base . 'logo.svg')) {
-        echo '<img src="' . esc_url($url . 'admin/assets/images/logo.svg') . '" alt="" class="formbridge-admin-logo" />';
+        echo '<img src="' . esc_url($url . 'admin/assets/images/logo.svg') . '" alt="" class="cf7db-admin-logo" />';
     }
 }
 
@@ -161,9 +161,9 @@ function formbridge_admin_logo(): void {
  *
  * @return string|null
  */
-function formbridge_menu_icon_url(): ?string {
-    $dir = defined('FORMBRIDGE_PLUGIN_DIR') ? FORMBRIDGE_PLUGIN_DIR : '';
-    $url = defined('FORMBRIDGE_PLUGIN_URL') ? FORMBRIDGE_PLUGIN_URL : '';
+function cf7db_menu_icon_url(): ?string {
+    $dir = defined('CF7DB_PLUGIN_DIR') ? CF7DB_PLUGIN_DIR : '';
+    $url = defined('CF7DB_PLUGIN_URL') ? CF7DB_PLUGIN_URL : '';
     if ($dir === '' || $url === '') {
         return null;
     }

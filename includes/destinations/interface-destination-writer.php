@@ -2,7 +2,7 @@
 /**
  * Interface for destination writers (e.g. MySQL, webhook).
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
  */
 
 declare(strict_types=1);
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-interface FormBridge_Destination_Writer {
+interface CF7DB_Destination_Writer {
 
     /**
      * Returns the destination identifier (e.g. 'mysql').

@@ -2,7 +2,9 @@
 /**
  * CRUD for saved form-to-destination mappings.
  *
- * @package FormBridge
+ * @package CF7_Database_Connector
+ *
+ * phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin tables; $wpdb is the correct API for custom table CRUD.
  */
 
 declare(strict_types=1);
@@ -11,13 +13,13 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class FormBridge_Mapping_Repository {
+class CF7DB_Mapping_Repository {
 
     private string $table;
 
     public function __construct() {
         global $wpdb;
-        $this->table = $wpdb->prefix . 'formbridge_mappings';
+        $this->table = $wpdb->prefix . 'cf7db_mappings';
     }
 
     /**
@@ -29,7 +31,7 @@ class FormBridge_Mapping_Repository {
     public function insert(array $data): int|false {
         global $wpdb;
 
-        $now = formbridge_now();
+        $now = cf7db_now();
         $active = isset($data['is_active']) ? (int) $data['is_active'] : 1;
 
         $result = $wpdb->query($wpdb->prepare(
@@ -127,7 +129,7 @@ class FormBridge_Mapping_Repository {
             return false;
         }
 
-        $now = formbridge_now();
+        $now = cf7db_now();
         $update = [
             'source_type'        => $data['source_type'] ?? $existing['source_type'],
             'form_id'            => (int) ($data['form_id'] ?? $existing['form_id']),
